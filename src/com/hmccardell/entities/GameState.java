@@ -41,4 +41,14 @@ public class GameState {
         Player playerToUpdate = players.get(indexOfPlayer);
         playerToUpdate.setDeck(deck);
     }
+
+    public void displayTotalCardsInState(){
+        int total = 0;
+        for (Player player : getPlayers()){
+            total += player.getDeck().size();
+        }
+
+        System.out.println("Total cards in system: " + total + "[ Player 1: " + players.get(0).getDeck().size() + " | Player 2: " + players.get(1).getDeck().size());
+
+    }
 }

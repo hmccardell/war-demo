@@ -28,4 +28,12 @@ public class WarCard implements Card {
         this.value = value;
         this.suit = suit;
     }
+
+    @Override
+    public String toString() {
+        return "WarCard{" +
+                "value=" + value +
+                ", suit=" + suit +
+                '}';
+    }
 }

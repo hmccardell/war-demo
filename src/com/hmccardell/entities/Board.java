@@ -117,37 +117,55 @@ public class Board {
         return name;
     }
 
-    public List<TrickCard> gatherCardsFromPlayers(GameState gameState) {
-        List<TrickCard> pool = new ArrayList<>();
-        if (gameState.getPlayers() == null || gameState.getPlayers().size() < 2) {
+    private boolean checkIfGameOver(GameState gameState) {
+
+        if (gameState.getPlayers() == null) {
             System.out.println(GAME_OVER_LESS_THAN_TWO_PLAYERS);
             gameState.setGameOver(true);
+            return true;
+        }
+
+        for (Player player : gameState.getPlayers()) {
+            if (player.getDeck() == null || player.getDeck().isEmpty()) {
+                gameState.getPlayers().remove(player);
+            }
+            if (gameState.getPlayers().size() < 2) {
+                System.out.println(GAME_OVER_LESS_THAN_TWO_PLAYERS);
+                gameState.setGameOver(true);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<TrickCard> gatherCardsFromPlayers(GameState gameState, boolean faceUp) {
+        List<TrickCard> pool = new ArrayList<>();
+        boolean gameOver = checkIfGameOver(gameState);
+        StringBuilder builder = new StringBuilder();
+        if (!gameOver) {
+            //remove a card from every player's deck and put it into a pool
+            for (Player player : gameState.getPlayers()) {
+                WarCard playerCard = player.getDeck().remove(0);
+                pool.add(new TrickCard(playerCard, player));
+                if (faceUp) {
+                    builder.append(player.getName() + " plays a " + playerCard.getValue() + " of " + playerCard.getSuit() + " ");
+                }
+                else {
+                    builder.append("A card was added to the pot face down for " + player.getName());
+                }
+            }
+            System.out.println(builder.toString());
+            return pool;
+        } else {
             return null;
         }
 
-        //remove a card from every player's deck and put it into a pool
-        for (Player player : gameState.getPlayers()) {
-            if (player.getDeck() == null || player.getDeck().size() < 1) {
-                List<Player> gamePlayers = gameState.getPlayers();
-                gamePlayers.remove(player);
-                gameState.setPlayers(gamePlayers);
-                if (gamePlayers.size() <= 1) {
-                    System.out.println(GAME_OVER_LESS_THAN_TWO_PLAYERS);
-                    gameState.setGameOver(true);
-                    return null;
-                }
-            }
-            WarCard playerCard = player.getDeck().remove(0);
-            pool.add(new TrickCard(playerCard, player));
-            //System.out.println(player.getName() + " plays a " + playerCard.getValue() + " of " + playerCard.getSuit());
-        }
-
-        return pool;
     }
 
-    public List<Player> determineWarOrWinnerOfTrick(List<TrickCard> pool) {
+    public TrickCard determineHighestCard(List<TrickCard> pool) {
 
-        if (pool == null || pool.isEmpty()) {
+        if(pool == null){
             return null;
         }
 
@@ -162,40 +180,64 @@ public class Board {
                 winningCard = pool.get(i);
             }
         }
+        return winningCard;
+    }
 
-        //check the rest of the pool to see if any values match the value of the highest card
+    public List<Player> determineWar(List<TrickCard> pool, TrickCard winningCard) {
+
+        if(pool == null || winningCard == null){
+            return null;
+        }
+
+        List<Player> winnerList = new ArrayList<>();
+
+        //check the pool to see if any values match the value of the highest card
         if (!pool.isEmpty() && pool.size() > 0) {
             for (int i = 0; i < pool.size(); i++) {
-                //if they match, update the war flag and add that player to the winner list
-                if (pool.get(i).getValue() == valueOfHighestCard && pool.get(i).getPlayer().getName() != winningCard.getPlayer().getName()) {
-                    valueOfHighestCard = pool.get(i).getValue();
+                //if they match, add that player to the winner list
+                if (pool.get(i).getValue() == winningCard.getValue() && pool.get(i).getPlayer().getName() != winningCard.getPlayer().getName()) {
                     winnerList.add(pool.get(i).getPlayer());
-                    System.out.println("WAR DETECTED!");
+                    System.out.println(pool.get(i).getPlayer().getName() + " joined the war");
                 }
             }
         }
 
         //whether or not war occurs, add the initial cardholder
         winnerList.add(winningCard.getPlayer());
+        if(winnerList.size() > 1){
+            System.out.println(winningCard.getPlayer().getName() + " joined the war");
+        }
 
         return winnerList;
     }
 
-    public void cleanUpTheTrick(GameState gameState, List<Player> playersWithMatchingCards, List<TrickCard> pool) {
 
-        if (playersWithMatchingCards == null || playersWithMatchingCards.isEmpty() || pool.isEmpty()) {
-            System.out.println("PROBLEM WITH GAMESTATE");
-            gameState.setGameOver(true);
-        } else if (playersWithMatchingCards.size() >= 2) {
-            gatherCardsFromPlayers(gameState);
-        } else if (playersWithMatchingCards.size() == 1) {
-            Player winnerOfTrick = playersWithMatchingCards.remove(0);
-            //System.out.println(winnerOfTrick.getName() + " won the trick");
-            for (TrickCard cardGoingToWinner : pool) {
-                //System.out.println(cardGoingToWinner.getValue() + " of " + cardGoingToWinner.getSuit() + " added to their deck");
-                winnerOfTrick.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
+    public void handleTrick(GameState gameState, List<TrickCard> pot){
+        TrickCard winningCard = determineHighestCard(pot);
+        List<Player> warList = determineWar(pot, winningCard);
+        if(warList.size() > 1){
+            pot.addAll(gatherCardsFromPlayers(gameState, false));
+            pot.addAll(gatherCardsFromPlayers(gameState, true));
+            handleTrick(gameState, pot);
+        } else{
+            cleanUpTheTrick(gameState, winningCard.getPlayer(), pot);
+        }
+    }
+
+    public void cleanUpTheTrick(GameState gameState, Player winningPlayer, List<TrickCard> pot) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(winningPlayer.getName() + " wins the trick, ");
+
+        if (pot != null && winningPlayer != null && !checkIfGameOver(gameState)) {
+             for (TrickCard cardGoingToWinner : pot) {
+                builder.append(cardGoingToWinner.getValue() + " of " + cardGoingToWinner.getSuit() + " ");
+                 winningPlayer.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
             }
         }
+
+        builder.append("added to their deck");
+        System.out.println(builder.toString());
     }
 
 }

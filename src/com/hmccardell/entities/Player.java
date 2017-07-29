@@ -49,4 +49,13 @@ public class Player {
 
     public Player() {
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", gamesWon=" + gamesWon +
+                ", deck=" + deck +
+                '}';
+    }
 }

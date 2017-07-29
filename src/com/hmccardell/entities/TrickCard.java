@@ -9,6 +9,8 @@ public class TrickCard implements Card {
     Suit suit;
     Player player;
 
+    public TrickCard(){};
+
     public TrickCard(WarCard warCard, Player player){
         this.value = warCard.getValue();
         this.suit = warCard.getSuit();

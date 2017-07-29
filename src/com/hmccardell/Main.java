@@ -32,13 +32,11 @@ public class Main {
             Board.dealCards(deck, gameState);
         }
         while(!gameState.isGameOver()){
-            List<TrickCard> pool = new ArrayList<>();
-            pool = board.gatherCardsFromPlayers(gameState);
-            List<Player> winners = new ArrayList<>();
-            winners.addAll(board.determineWarOrWinnerOfTrick(pool));
-            board.cleanUpTheTrick(gameState, winners, pool);
-            System.out.println("Hayes cards: " + gameState.getPlayers().get(0).getDeck().size() + " Greg cards: " + gameState.getPlayers().get(1).getDeck().size());
-            Thread.sleep(250);
+            List<TrickCard> pot = new ArrayList<>();
+            pot = board.gatherCardsFromPlayers(gameState, true);
+            Thread.sleep(1000);
+            board.handleTrick(gameState, pot);
+            gameState.displayTotalCardsInState();
         }
 
         System.out.println("End program");
