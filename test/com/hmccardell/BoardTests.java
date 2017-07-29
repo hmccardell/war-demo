@@ -59,46 +59,56 @@ public class BoardTests {
     }
 
     @Test
-    public void theFlipShouldResultInListWithSizeEqualToNumberOfPlayers(){
+    public void gatherCardsFromPlayersShouldResultInListWithSizeEqualToNumberOfPlayers(){
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.theFlip(gameState);
+        cardPool = board.gatherCardsFromPlayers(gameState);
         assertEquals(cardPool.size(), gameState.getPlayers().size());
     }
 
     @Test
-    public void theFlipShouldReturnNullWhenCalledWithNoPlayers(){
+    public void gatherCardsFromPlayersShouldReturnNullWhenCalledWithNoPlayers(){
         gameState.setPlayers(null);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.theFlip(gameState);
+        cardPool = board.gatherCardsFromPlayers(gameState);
         assertNull(cardPool);
     }
 
     @Test
-    public void theFlipShouldReturnNullWhenAPlayerHasNoCardsInTheirDeck(){
+    public void gatherCardsFromPlayersdReturnNullWhenAPlayerHasNoCardsInTheirDeck(){
         List<Player> testList = new ArrayList<>();
+        testList.add(playerWithNoCards);
         testList.add(playerWithNoCards);
         gameState.setPlayers(testList);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.theFlip(gameState);
+        cardPool = board.gatherCardsFromPlayers(gameState);
         assertNull(cardPool);
     }
 
-//    @Test
-//    public void determineWarReturnsNullWhenCardValuesMatch(){
-//        List<TrickCard> testPool = new ArrayList<>();
-//        TrickCard card1 = new TrickCard(new WarCard(10, Suit.SPADES), player1);
-//        TrickCard card2 = new TrickCard(new WarCard(9, Suit.SPADES), player2);
-//        testPool.add(card1);
-//        testPool.add(card2);
-//        List<Player> resultingSet = board.determineWarOrWinnerOfTrick(testPool);
-//        assertNull(resultingSet);
-//    }
+    @Test
+    public void gatherCardsFromPlayersShouldReturnNullWhenPlayerHasNullDeck() {
+        List<Player> playerList = new ArrayList<>();
+        playerList.add(playerWithNoCards);
+        gameState.setPlayers(playerList);
+        assertNull(board.gatherCardsFromPlayers(gameState));
+    }
 
     @Test
     public void determineWarReturnsNullWhenAnEmptyPoolIsPassed(){
         List<TrickCard> testPool = new ArrayList<>();
         List<Player> resultingSet = board.determineWarOrWinnerOfTrick(testPool);
         assertNull(resultingSet);
+    }
+
+    @Test
+    public void determineWarReturnsOnePlayerWhenThereAreNoWars(){
+        List<TrickCard> testPool = new ArrayList<>();
+        TrickCard card1 = new TrickCard(new WarCard(11, Suit.SPADES), player1);
+        TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2);
+        testPool.add(card1);
+        testPool.add(card2);
+        int actualSize = board.determineWarOrWinnerOfTrick(testPool).size();
+        int expectedSize = 1;
+        assertEquals(expectedSize, actualSize);
     }
 
     @Test
@@ -114,7 +124,7 @@ public class BoardTests {
     }
 
     @Test
-    public void determineWarReturnsTwoPlayersWhenThreeValuesMatch(){
+    public void determineWarReturnsThreePlayersWhenThreeValuesMatch(){
         List<TrickCard> testPool = new ArrayList<>();
         TrickCard card1 = new TrickCard(new WarCard(10, Suit.SPADES), player1);
         TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2);

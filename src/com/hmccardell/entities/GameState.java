@@ -37,4 +37,8 @@ public class GameState {
         return players.get(index);
     }
 
+    public void setPlayerDeck(int indexOfPlayer, List<WarCard> deck){
+        Player playerToUpdate = players.get(indexOfPlayer);
+        playerToUpdate.setDeck(deck);
+    }
 }
