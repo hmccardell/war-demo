@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by hmccardell on 7/26/2017.
+ * A class to track the state of a player
+ *
+ * @author hmccardell
  */
 public class Player {
 
     private String name;
-    private int gamesWon;
     private List<WarCard> deck;
 
     public String getName() {
@@ -20,14 +21,6 @@ public class Player {
         this.name = name;
     }
 
-    public int getGamesWon() {
-        return gamesWon;
-    }
-
-    public void setGamesWon(int gamesWon) {
-        this.gamesWon = gamesWon;
-    }
-
     public List<WarCard> getDeck() {
         return deck;
     }
@@ -36,14 +29,13 @@ public class Player {
         this.deck = deck;
     }
 
-    public void addCardToPlayerDeck(WarCard cardToAdd){
+    public void addCardToPlayerDeck(WarCard cardToAdd) {
         deck.add(cardToAdd);
     }
 
     public Player(String name) {
 
         this.name = name;
-        gamesWon = 0;
         deck = new ArrayList<>();
     }
 
@@ -51,10 +43,27 @@ public class Player {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Player player = (Player) o;
+
+        if (!name.equals(player.name)) return false;
+        return deck.equals(player.deck);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + deck.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "Player{" +
                 "name='" + name + '\'' +
-                ", gamesWon=" + gamesWon +
                 ", deck=" + deck +
                 '}';
     }

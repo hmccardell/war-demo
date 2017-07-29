@@ -25,16 +25,18 @@ public class Main {
         {
             Player player1 = new Player("Hayes");
             Player player2 = new Player("Greg");
+            Player player3 = new Player("Dan");
             List<Player> gamePlayers = new ArrayList<>();
             gamePlayers.add(player1);
             gamePlayers.add(player2);
+            gamePlayers.add(player3);
             gameState.setPlayers(gamePlayers);
             Board.dealCards(deck, gameState);
         }
         while(!gameState.isGameOver()){
             List<TrickCard> pot = new ArrayList<>();
-            pot = board.gatherCardsFromPlayers(gameState, true);
-            Thread.sleep(1000);
+            pot = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
+            Thread.sleep(500);
             board.handleTrick(gameState, pot);
             gameState.displayTotalCardsInState();
         }

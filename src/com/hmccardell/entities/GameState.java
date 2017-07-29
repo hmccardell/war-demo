@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by hmccardell on 7/26/2017.
+ * A class to track the state of the game.
+ *
+ * @author hmccardell
  */
 public class GameState {
 
@@ -12,7 +14,7 @@ public class GameState {
 
     private boolean gameOver;
 
-    public GameState(){
+    public GameState() {
         gameOver = false;
         players = new ArrayList<>();
     }
@@ -33,22 +35,35 @@ public class GameState {
         this.players = players;
     }
 
-    public Player getPlayerByIndex(int index){
+    public Player getPlayerByIndex(int index) {
         return players.get(index);
     }
 
-    public void setPlayerDeck(int indexOfPlayer, List<WarCard> deck){
+    public void setPlayerDeck(int indexOfPlayer, List<WarCard> deck) {
         Player playerToUpdate = players.get(indexOfPlayer);
         playerToUpdate.setDeck(deck);
     }
 
-    public void displayTotalCardsInState(){
+    public void displayTotalCardsInState() {
         int total = 0;
-        for (Player player : getPlayers()){
+        StringBuilder individualTotals = new StringBuilder();
+        for (Player player : getPlayers()) {
             total += player.getDeck().size();
+            individualTotals.append(player.getName() + " : " + player.getDeck().size() + " ");
         }
+        StringBuilder systemTotals = new StringBuilder();
+        systemTotals.append("Total cards in system: " + total + "[ ");
+        systemTotals.append(individualTotals.toString());
+        systemTotals.append("]");
+        System.out.println(systemTotals.toString());
 
-        System.out.println("Total cards in system: " + total + "[ Player 1: " + players.get(0).getDeck().size() + " | Player 2: " + players.get(1).getDeck().size());
+    }
 
+    @Override
+    public String toString() {
+        return "GameState{" +
+                "players=" + players +
+                ", gameOver=" + gameOver +
+                '}';
     }
 }

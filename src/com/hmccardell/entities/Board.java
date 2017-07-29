@@ -8,9 +8,14 @@ import java.util.List;
 import static com.hmccardell.entities.Constants.*;
 
 /**
- * Created by hmccardell on 7/26/2017.
+ * A class for the main engine of the game.
+ *
+ * @author hmccardell
  */
 public class Board {
+
+    private int _millisecondDelay;
+    private boolean _verboseMode;
 
     public static void dealCards(List<WarCard> gameDeck, GameState gameState) {
         int remainder = 52 % gameState.getPlayers().size();
@@ -31,7 +36,24 @@ public class Board {
         }
     }
 
+    public int get_millisecondDelay() {
+        return _millisecondDelay;
+    }
+
+    public void set_millisecondDelay(int _millisecondDelay) {
+        this._millisecondDelay = _millisecondDelay;
+    }
+
+    public boolean is_verboseMode() {
+        return _verboseMode;
+    }
+
+    public void set_verboseMode(boolean _verboseMode) {
+        this._verboseMode = _verboseMode;
+    }
+
     public static void dealCardToPlayer(List<WarCard> gameDeck, List<WarCard> playerDeck) {
+
         if (!gameDeck.isEmpty()) {
             WarCard card = gameDeck.remove(0);
             playerDeck.add(card);
@@ -89,6 +111,37 @@ public class Board {
         gameState.setPlayers(playerList);
     }
 
+    private void promptSettings(BufferedReader br) {
+        System.out.println(VERBOSITY_PROMPT);
+        String verbosity = "";
+
+        try {
+            verbosity = br.readLine().trim();
+        } catch (IOException e) {
+            System.out.println(VERBOSITY_ERROR);
+            _verboseMode = false;
+        }
+
+        if (verbosity != null && verbosity.equals("y") || verbosity.equals("Y")) {
+            _verboseMode = true;
+        } else {
+            _verboseMode = false;
+        }
+
+        System.out.println(DELAY_PROMPT);
+        int delay = 0;
+
+        try {
+            delay = Integer.parseInt(br.readLine().trim());
+        } catch (IOException e) {
+            System.out.println(DELAY_ERROR);
+            _millisecondDelay = 0;
+        }
+
+        _millisecondDelay = delay;
+
+    }
+
     private static String promptName(BufferedReader br) {
         System.out.println(PROMPT_PLAYER_NAME);
         String name = "";
@@ -139,20 +192,19 @@ public class Board {
         return false;
     }
 
-    public List<TrickCard> gatherCardsFromPlayers(GameState gameState, boolean faceUp) {
+    public List<TrickCard> gatherCardsFromPlayers(List<Player> playersToGatherFrom, GameState gameState, boolean faceUp) {
         List<TrickCard> pool = new ArrayList<>();
         boolean gameOver = checkIfGameOver(gameState);
         StringBuilder builder = new StringBuilder();
         if (!gameOver) {
             //remove a card from every player's deck and put it into a pool
-            for (Player player : gameState.getPlayers()) {
+            for (Player player : playersToGatherFrom) {
                 WarCard playerCard = player.getDeck().remove(0);
                 pool.add(new TrickCard(playerCard, player));
                 if (faceUp) {
                     builder.append(player.getName() + " plays a " + playerCard.getValue() + " of " + playerCard.getSuit() + " ");
-                }
-                else {
-                    builder.append("A card was added to the pot face down for " + player.getName());
+                } else {
+                    builder.append("Card was added to the pot face down for " + player.getName() + " ");
                 }
             }
             System.out.println(builder.toString());
@@ -165,7 +217,7 @@ public class Board {
 
     public TrickCard determineHighestCard(List<TrickCard> pool) {
 
-        if(pool == null){
+        if (pool == null) {
             return null;
         }
 
@@ -185,7 +237,7 @@ public class Board {
 
     public List<Player> determineWar(List<TrickCard> pool, TrickCard winningCard) {
 
-        if(pool == null || winningCard == null){
+        if (pool == null || winningCard == null) {
             return null;
         }
 
@@ -204,22 +256,21 @@ public class Board {
 
         //whether or not war occurs, add the initial cardholder
         winnerList.add(winningCard.getPlayer());
-        if(winnerList.size() > 1){
+        if (winnerList.size() > 1) {
             System.out.println(winningCard.getPlayer().getName() + " joined the war");
         }
 
         return winnerList;
     }
 
-
-    public void handleTrick(GameState gameState, List<TrickCard> pot){
+    public void handleTrick(GameState gameState, List<TrickCard> pot) {
         TrickCard winningCard = determineHighestCard(pot);
         List<Player> warList = determineWar(pot, winningCard);
-        if(warList.size() > 1){
-            pot.addAll(gatherCardsFromPlayers(gameState, false));
-            pot.addAll(gatherCardsFromPlayers(gameState, true));
+        if (warList.size() > 1) {
+            pot.addAll(gatherCardsFromPlayers(warList, gameState, false));
+            pot.addAll(gatherCardsFromPlayers(warList, gameState, true));
             handleTrick(gameState, pot);
-        } else{
+        } else {
             cleanUpTheTrick(gameState, winningCard.getPlayer(), pot);
         }
     }
@@ -230,9 +281,9 @@ public class Board {
         builder.append(winningPlayer.getName() + " wins the trick, ");
 
         if (pot != null && winningPlayer != null && !checkIfGameOver(gameState)) {
-             for (TrickCard cardGoingToWinner : pot) {
+            for (TrickCard cardGoingToWinner : pot) {
                 builder.append(cardGoingToWinner.getValue() + " of " + cardGoingToWinner.getSuit() + " ");
-                 winningPlayer.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
+                winningPlayer.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
             }
         }
 

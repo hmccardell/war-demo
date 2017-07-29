@@ -81,7 +81,7 @@ public class BoardTests {
     @Test
     public void gatherCardsFromPlayersShouldResultInListWithSizeEqualToNumberOfPlayers() {
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState, true);
+        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
         assertEquals(cardPool.size(), gameState.getPlayers().size());
     }
 
@@ -89,7 +89,7 @@ public class BoardTests {
     public void gatherCardsFromPlayersShouldReturnNullWhenCalledWithNoPlayers() {
         gameState.setPlayers(null);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState, true);
+        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
         assertNull(cardPool);
     }
 
@@ -100,7 +100,7 @@ public class BoardTests {
         testList.add(playerWithNoCards);
         gameState.setPlayers(testList);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState, true);
+        cardPool = board.gatherCardsFromPlayers(testList, gameState, true);
         assertNull(cardPool);
     }
 
@@ -109,7 +109,7 @@ public class BoardTests {
         List<Player> playerList = new ArrayList<>();
         playerList.add(playerWithNoCards);
         gameState.setPlayers(playerList);
-        assertNull(board.gatherCardsFromPlayers(gameState, true));
+        assertNull(board.gatherCardsFromPlayers(playerList, gameState, true));
     }
 
     @Test
