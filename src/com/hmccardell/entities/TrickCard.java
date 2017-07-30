@@ -10,16 +10,32 @@ public class TrickCard implements Card {
     int value;
     Suit suit;
     Player player;
+    boolean faceUp;
+
+
+
+    public boolean isFaceUp() {
+        return faceUp;
+    }
+
+    public void setFaceUp(boolean faceUp) {
+        this.faceUp = faceUp;
+    }
 
     public TrickCard() {
     }
-
-    ;
 
     public TrickCard(WarCard warCard, Player player) {
         this.value = warCard.getValue();
         this.suit = warCard.getSuit();
         this.player = player;
+    }
+
+    public TrickCard(WarCard warCard, Player player, boolean faceUp) {
+        this.value = warCard.getValue();
+        this.suit = warCard.getSuit();
+        this.player = player;
+        this.faceUp = faceUp;
     }
 
     public int getValue() {
@@ -73,5 +89,36 @@ public class TrickCard implements Card {
                 ", suit=" + suit +
                 ", player=" + player +
                 '}';
+    }
+
+    public String getName(int value) {
+
+        String cardName = "";
+
+        switch (value) {
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                cardName = String.valueOf(value) + " of " + suit + " ";
+                break;
+            case 11:
+                cardName =  "Jack of " + suit;
+                break;
+            case 12:
+                cardName = "Queen of " + suit;
+                break;
+            case 13:
+                cardName = "King of " + suit;
+                break;
+            case 14:
+                cardName = "Ace of " + suit;
+        }
+        return cardName;
     }
 }

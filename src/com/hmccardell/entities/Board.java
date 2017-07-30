@@ -111,7 +111,7 @@ public class Board {
         gameState.setPlayers(playerList);
     }
 
-    private void promptSettings(BufferedReader br) {
+    public void promptSettings(BufferedReader br) {
         System.out.println(VERBOSITY_PROMPT);
         String verbosity = "";
 
@@ -130,10 +130,16 @@ public class Board {
 
         System.out.println(DELAY_PROMPT);
         int delay = 0;
-
+        String lineFeed = "";
         try {
-            delay = Integer.parseInt(br.readLine().trim());
+            lineFeed = br.readLine().trim().toString();
         } catch (IOException e) {
+            System.out.println(DELAY_ERROR);
+            _millisecondDelay = 0;
+        }
+        try {
+            delay = Integer.parseInt(lineFeed);
+        } catch (Exception e) {
             System.out.println(DELAY_ERROR);
             _millisecondDelay = 0;
         }
@@ -200,10 +206,11 @@ public class Board {
             //remove a card from every player's deck and put it into a pool
             for (Player player : playersToGatherFrom) {
                 WarCard playerCard = player.getDeck().remove(0);
-                pool.add(new TrickCard(playerCard, player));
                 if (faceUp) {
-                    builder.append(player.getName() + " plays a " + playerCard.getValue() + " of " + playerCard.getSuit() + " ");
+                    pool.add(new TrickCard(playerCard, player, true));
+                    builder.append(player.getName() + " plays a " + playerCard.getName() + ". ");
                 } else {
+                    pool.add(new TrickCard(playerCard, player, false));
                     builder.append("Card was added to the pot face down for " + player.getName() + " ");
                 }
             }
@@ -227,7 +234,7 @@ public class Board {
 
         //find the highest value and track the player
         for (int i = 0; i < pool.size(); i++) {
-            if (pool.get(i).getValue() > valueOfHighestCard) {
+            if (pool.get(i).getValue() > valueOfHighestCard && pool.get(i).isFaceUp()) {
                 valueOfHighestCard = pool.get(i).getValue();
                 winningCard = pool.get(i);
             }
@@ -247,7 +254,9 @@ public class Board {
         if (!pool.isEmpty() && pool.size() > 0) {
             for (int i = 0; i < pool.size(); i++) {
                 //if they match, add that player to the winner list
-                if (pool.get(i).getValue() == winningCard.getValue() && pool.get(i).getPlayer().getName() != winningCard.getPlayer().getName()) {
+                if (pool.get(i).getValue() == winningCard.getValue()
+                        && pool.get(i).getPlayer().getName() != winningCard.getPlayer().getName()
+                        && pool.get(i).isFaceUp() == true) {
                     winnerList.add(pool.get(i).getPlayer());
                     System.out.println(pool.get(i).getPlayer().getName() + " joined the war");
                 }
@@ -268,6 +277,9 @@ public class Board {
         List<Player> warList = determineWar(pot, winningCard);
         if (warList.size() > 1) {
             pot.addAll(gatherCardsFromPlayers(warList, gameState, false));
+            for (TrickCard card : pot) {
+                card.setFaceUp(false);
+            }
             pot.addAll(gatherCardsFromPlayers(warList, gameState, true));
             handleTrick(gameState, pot);
         } else {
@@ -282,7 +294,7 @@ public class Board {
 
         if (pot != null && winningPlayer != null && !checkIfGameOver(gameState)) {
             for (TrickCard cardGoingToWinner : pot) {
-                builder.append(cardGoingToWinner.getValue() + " of " + cardGoingToWinner.getSuit() + " ");
+                builder.append(cardGoingToWinner.getName(cardGoingToWinner.getValue()));
                 winningPlayer.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
             }
         }
