@@ -42,7 +42,6 @@ public class Board {
         this._verboseMode = _verboseMode;
     }
 
-
     /**
      * Checks the game state for the number of players and divides the game deck into even player decks.
      * It also checks for remainder cards and deals them out to each player until no cards remain.
@@ -52,7 +51,7 @@ public class Board {
      */
     public boolean dealCards(List<WarCard> gameDeck) {
 
-        if(gameDeck == null || gameDeck.isEmpty()){
+        if (gameDeck == null || gameDeck.isEmpty()) {
             return false;
         }
 
@@ -70,10 +69,15 @@ public class Board {
             player.setDeck(playerDeck);
         }
 
-        return(gameDeck.isEmpty());
+        return (gameDeck.isEmpty());
     }
 
-
+    /**
+     * Removes a card from the gameDeck and adds it to a playerDeck
+     *
+     * @param gameDeck   a list of cards to remove a card from
+     * @param playerDeck a list of cards to add the removed card to
+     */
     public void dealCardToPlayer(List<WarCard> gameDeck, List<WarCard> playerDeck) {
 
         if (!gameDeck.isEmpty()) {
@@ -82,6 +86,11 @@ public class Board {
         }
     }
 
+    /**
+     * Populates a list with the standard deck of 52 playing cards
+     *
+     * @param deck the list to populate
+     */
     public static void populateDeck(List<WarCard> deck) {
 
         for (int i = 2; i < 15; i++) {
@@ -92,7 +101,12 @@ public class Board {
         }
     }
 
-    public static void setupPlayers(GameState gameState, BufferedReader br) {
+    /**
+     * Prompts the user for the number of players and a prompts the user for a name for each player
+     *
+     * @param br a buffered reader to use for reading lines from the console
+     */
+    public void setupPlayers(BufferedReader br) {
 
         int numberOfPlayers = 0;
 
@@ -130,9 +144,14 @@ public class Board {
             playerList.add(player);
         }
 
-        gameState.setPlayers(playerList);
+        _gameState.setPlayers(playerList);
     }
 
+    /**
+     * Prompts the user for game settings: verbosity and delay
+     *
+     * @param br the buffered reader for reading lines in from the console
+     */
     public void promptSettings(BufferedReader br) {
         System.out.println(VERBOSITY_PROMPT);
         String verbosity = "";
@@ -170,6 +189,12 @@ public class Board {
 
     }
 
+    /**
+     * Prompts the players for their name and captures the input
+     *
+     * @param br the buffered reader to use to read in lines from the console
+     * @return the String name the user entered
+     */
     private static String promptName(BufferedReader br) {
         System.out.println(PROMPT_PLAYER_NAME);
         String name = "";
@@ -198,6 +223,13 @@ public class Board {
         return name;
     }
 
+    /**
+     * Checks the gameState to detect if a player has run out of cards.
+     * If they have run out of cards, they are removed from the state of the game.
+     * If only one player remains, they have won, and the game is over.
+     *
+     * @return true if a player has one, otherwise false
+     */
     private boolean checkIfGameOver() {
 
         if (_gameState.getPlayers() == null) {
@@ -220,6 +252,19 @@ public class Board {
         return false;
     }
 
+    /**
+     * Gathers a card from each player in the game and puts them into a list. If the cards are to be
+     * considered face up, eg: they are about to be used to determine the outcome of a trick, then
+     * the state of the cards will be set to faceUp.
+     * <p>
+     * Otherwise, the gathered cards are to be used for the pot and should not be checked for winning
+     * a trick, so they are added to the pot face down.
+     *
+     * @param playersToGatherFrom the players to gather cards from, usually all players for a regular
+     *                            trick, or only the participants of a war inside a war
+     * @param faceUp              the state of the cards to be gathered from the players
+     * @return
+     */
     public List<TrickCard> gatherCardsFromPlayers(List<Player> playersToGatherFrom, boolean faceUp) {
         List<TrickCard> pool = new ArrayList<>();
         boolean gameOver = checkIfGameOver();
@@ -228,12 +273,13 @@ public class Board {
             //remove a card from every player's deck and put it into a pool
             for (Player player : playersToGatherFrom) {
                 WarCard playerCard = player.getDeck().remove(0);
+                //If the cards should be gathered face up, set their state to face up
                 if (faceUp) {
                     pool.add(new TrickCard(playerCard, player, true));
                     builder.append(player.getName() + " plays a " + playerCard.getName() + ". ");
                 } else {
                     pool.add(new TrickCard(playerCard, player, false));
-                    builder.append("Card was added to the pot face down for " + player.getName() + " ");
+                    builder.append("Card was added to the pot face down for " + player.getName() + " . ");
                 }
             }
             System.out.println(builder.toString());
@@ -241,9 +287,14 @@ public class Board {
         } else {
             return null;
         }
-
     }
 
+    /**
+     * Takes in a list of cards, determines the card with the highest value and returns it.
+     *
+     * @param pool the list of cards to check the values of
+     * @return null if the pool is null, otherwise the TrickCard with the highest value in the list
+     */
     public TrickCard determineHighestCard(List<TrickCard> pool) {
 
         if (pool == null) {
@@ -252,18 +303,29 @@ public class Board {
 
         int valueOfHighestCard = -1;
         TrickCard winningCard = null;
-        List<Player> winnerList = new ArrayList<>();
 
-        //find the highest value and track the player
-        for (int i = 0; i < pool.size(); i++) {
-            if (pool.get(i).getValue() > valueOfHighestCard && pool.get(i).isFaceUp()) {
-                valueOfHighestCard = pool.get(i).getValue();
-                winningCard = pool.get(i);
+        //find the card in the pool with the highest value
+        for (TrickCard card : pool) {
+            if (card.getValue() > valueOfHighestCard && card.isFaceUp()) {
+                valueOfHighestCard = card.getValue();
+                winningCard = card;
             }
         }
+
         return winningCard;
     }
 
+    /**
+     * Takes a list of cards and a winning card, and checks the pool to see if any
+     * cards match that value. If one or more cards do match values with the card
+     * that was passed in, then the owner of those cards are added to the list of
+     * winners.  If no other cards match, then only the original winning card's
+     * owner is added to the winner list.
+     *
+     * @param pool        a list of TrickCards to check the values agains the winningCard
+     * @param winningCard the highvalue card to check against the pool
+     * @return the list of players that have the matching highest value cards
+     */
     public List<Player> determineWar(List<TrickCard> pool, TrickCard winningCard) {
 
         if (pool == null || winningCard == null) {
@@ -274,13 +336,12 @@ public class Board {
 
         //check the pool to see if any values match the value of the highest card
         if (!pool.isEmpty() && pool.size() > 0) {
-            for (int i = 0; i < pool.size(); i++) {
-                //if they match, add that player to the winner list
-                if (pool.get(i).getValue() == winningCard.getValue()
-                        && pool.get(i).getPlayer().getName() != winningCard.getPlayer().getName()
-                        && pool.get(i).isFaceUp() == true) {
-                    winnerList.add(pool.get(i).getPlayer());
-                    System.out.println(pool.get(i).getPlayer().getName() + " joined the war");
+            for (TrickCard card : pool) {
+                if (card.getValue() == winningCard.getValue()
+                        && card.getPlayer().getName() != winningCard.getPlayer().getName()
+                        && card.isFaceUp()) {
+                    winnerList.add(card.getPlayer());
+                    System.out.println(card.getPlayer().getName() + " joined the war");
                 }
             }
         }
@@ -294,7 +355,16 @@ public class Board {
         return winnerList;
     }
 
+    /**
+     * The recursive handler function that calls other functions to handle an entire trick.
+     *
+     * @param pot the list of cards for the method to handle
+     */
     public void handleTrick(List<TrickCard> pot) {
+        // The key for this method was tracking which cards were face up and which were face down.
+        // Previous to that, cards which had been drawn "face down" were still being checked by the
+        // game engine and were winning wars.
+
         TrickCard winningCard = determineHighestCard(pot);
         List<Player> warList = determineWar(pot, winningCard);
         if (warList.size() > 1) {
@@ -309,6 +379,14 @@ public class Board {
         }
     }
 
+    /**
+     * A method for cleaning up the state at the end of a trick. It takes the winning player
+     * and the pot, displays the winner of the trick to the user, and adds the pot of cards
+     * to the winning players deck.
+     *
+     * @param winningPlayer the player who won the trick
+     * @param pot the pot of cards that the winning player won
+     */
     public void cleanUpTheTrick(Player winningPlayer, List<TrickCard> pot) {
 
         StringBuilder builder = new StringBuilder();
