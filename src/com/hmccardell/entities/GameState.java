@@ -55,7 +55,7 @@ public class GameState {
         systemTotals.append("Total cards in system: " + total + " [ ");
         systemTotals.append(individualTotals.toString());
         systemTotals.append("]");
-        //System.out.println(systemTotals.toString().trim());
+        System.out.println(systemTotals.toString().trim());
 
     }
 
