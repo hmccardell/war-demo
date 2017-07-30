@@ -103,7 +103,7 @@ public class TrickCard {
             case 8:
             case 9:
             case 10:
-                cardName = String.valueOf(value) + " of " + suit + " ";
+                cardName = String.valueOf(value) + " of " + suit;
                 break;
             case 11:
                 cardName = "Jack of " + suit;

@@ -42,6 +42,20 @@ public class Player {
     public Player() {
     }
 
+    /**
+     * Check the player's deck to see if it is empty
+     *
+     * @return true if empty, false if contains cards
+     */
+    public boolean deckIsEmpty() {
+        if (deck != null && deck.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

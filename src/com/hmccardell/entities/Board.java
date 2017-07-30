@@ -121,16 +121,8 @@ public class Board {
                 System.out.println(UNACCEPTIBLE_INPUT_TRY_AGAIN);
             }
 
-            if (numberOfPlayers == 9) {
-                System.out.println(SORRY_NO_GAME);
-                break;
-            }
         }
         while (numberOfPlayers < 2 || numberOfPlayers > 4);
-
-        if (numberOfPlayers == 9) {
-            return;
-        }
 
         List<Player> playerList = new ArrayList<>();
 
@@ -226,32 +218,34 @@ public class Board {
     }
 
     /**
-     * Checks the gameState to detect if a player has run out of cards.
-     * If they have run out of cards, they are removed from the state of the game.
-     * If only one player remains, they have won, and the game is over.
+     * Checks the gameState for the number of current players.
+     * If only one player remains, they have won, and the gamestate is set.
      *
-     * @return true if a player has one, otherwise false
+     * @return true if a player has won, otherwise false
      */
-    private boolean checkIfGameOver() {
-
-        if (_gameState.getPlayers() == null) {
+    public boolean checkIfGameOver() {
+        if (_gameState.getPlayers() == null || _gameState.getPlayers().size() < 2) {
             System.out.println(GAME_OVER_LESS_THAN_TWO_PLAYERS);
             _gameState.setGameOver(true);
             return true;
+        } else {
+            return false;
         }
+    }
 
+    /**
+     * Removes any player with an empty deck from the game;
+     */
+    public void removePlayersWithEmptyDecksFromTheGame() {
+        List<Player> playersToRemove = new ArrayList<>();
         for (Player player : _gameState.getPlayers()) {
-            if (player.getDeck() == null || player.getDeck().isEmpty()) {
-                _gameState.getPlayers().remove(player);
-            }
-            if (_gameState.getPlayers().size() < 2) {
-                System.out.println(GAME_OVER_LESS_THAN_TWO_PLAYERS);
-                _gameState.setGameOver(true);
-                return true;
+            if (player.deckIsEmpty()) {
+                displayRemovalFromGame(player);
+                playersToRemove.add(player);
             }
         }
 
-        return false;
+        _gameState.getPlayers().removeAll(playersToRemove);
     }
 
     /**
@@ -271,24 +265,25 @@ public class Board {
         List<TrickCard> pool = new ArrayList<>();
         boolean gameOver = checkIfGameOver();
         StringBuilder builder = new StringBuilder();
-        if (!gameOver) {
-            //remove a card from every player's deck and put it into a pool
-            for (Player player : playersToGatherFrom) {
+        //remove a card from every player's deck and put it into a pool
+        for (Player player : playersToGatherFrom) {
+            if (player.getDeck() != null && !player.deckIsEmpty()) {
                 Card playerCard = player.getDeck().remove(0);
                 //If the cards should be gathered face up, set their state to face up
                 if (faceUp) {
                     pool.add(new TrickCard(playerCard, player, true));
+                    builder.append("\n");
                     builder.append(player.getName() + " plays a " + playerCard.getName() + ". ");
                 } else {
                     pool.add(new TrickCard(playerCard, player, false));
                     builder.append("Card was added to the pot face down for " + player.getName() + ". ");
                 }
             }
-            System.out.println(builder.toString());
-            return pool;
-        } else {
-            return null;
         }
+        if (_verboseMode) {
+            System.out.println(builder.toString());
+        }
+        return pool;
     }
 
     /**
@@ -335,6 +330,7 @@ public class Board {
         }
 
         List<Player> winnerList = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
 
         //check the pool to see if any values match the value of the highest card
         if (!pool.isEmpty() && pool.size() > 0) {
@@ -343,7 +339,7 @@ public class Board {
                         && card.getPlayer().getName() != winningCard.getPlayer().getName()
                         && card.isFaceUp()) {
                     winnerList.add(card.getPlayer());
-                    System.out.println(card.getPlayer().getName() + " joined the war");
+                    builder.append(card.getPlayer().getName() + " joined the war. ");
                 }
             }
         }
@@ -351,7 +347,11 @@ public class Board {
         //whether or not war occurs, add the initial cardholder
         winnerList.add(winningCard.getPlayer());
         if (winnerList.size() > 1) {
-            System.out.println(winningCard.getPlayer().getName() + " joined the war");
+            builder.append(winningCard.getPlayer().getName() + " joined the war.");
+        }
+
+        if (_verboseMode) {
+            System.out.println(builder.toString());
         }
 
         return winnerList;
@@ -366,6 +366,10 @@ public class Board {
         // The key for this method was tracking which cards were face up and which were face down.
         // Previous to that, cards which had been drawn "face down" were still being checked by the
         // game engine and were winning wars.
+
+        if (pot == null || pot.isEmpty()) {
+            return;
+        }
 
         TrickCard winningCard = determineHighestCard(pot);
         List<Player> warList = determineWar(pot, winningCard);
@@ -387,22 +391,25 @@ public class Board {
      * to the winning players deck.
      *
      * @param winningPlayer the player who won the trick
-     * @param pot the pot of cards that the winning player won
+     * @param pot           the pot of cards that the winning player won
      */
     public void cleanUpTheTrick(Player winningPlayer, List<TrickCard> pot) {
 
         StringBuilder builder = new StringBuilder();
-        builder.append(winningPlayer.getName() + " wins the trick, ");
 
         if (pot != null && winningPlayer != null && !checkIfGameOver()) {
+            builder.append(winningPlayer.getName() + " wins the trick, ");
+
             for (TrickCard cardGoingToWinner : pot) {
                 builder.append(cardGoingToWinner.getName(cardGoingToWinner.getValue()) + " ");
                 winningPlayer.addCardToPlayerDeck((new Card(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
             }
         }
 
-        builder.append(" added to their deck");
-        System.out.println(builder.toString());
+        builder.append("added to their deck.");
+        if (_verboseMode) {
+            System.out.println(builder.toString().trim());
+        }
     }
 
 }

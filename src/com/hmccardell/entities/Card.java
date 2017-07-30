@@ -1,7 +1,9 @@
 package com.hmccardell.entities;
 
 /**
- * A class that
+ * A class that models a standard playing card.
+ *
+ * @author hmccardell
  */
 public class Card {
 
@@ -64,6 +66,7 @@ public class Card {
                 break;
             case 14:
                 cardName = "Ace of " + suit;
+                break;
         }
         return cardName;
     }

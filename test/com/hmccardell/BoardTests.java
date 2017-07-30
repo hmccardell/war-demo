@@ -10,7 +10,9 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * Created by hmccardell on 7/27/2017.
+ * Tests for the game engine.
+ *
+ * @author hmccardell
  */
 public class BoardTests extends BaseTest {
 
@@ -26,7 +28,6 @@ public class BoardTests extends BaseTest {
     @Before
     public void setup() {
         setupTestBoard();
-        ;
 
     }
 
@@ -46,9 +47,6 @@ public class BoardTests extends BaseTest {
         board.set_gameState(gameState);
     }
 
-    //    Board board = new Board;
-    //    Board boardSpy = Mockito.spy(board);
-    //    Mockito.when(boardSpy.()).thenReturn(5l);
     @Test
     public void dealCardsDistrubitesEntireDeck() {
         List<Card> gameDeck = new ArrayList<>();
@@ -138,33 +136,6 @@ public class BoardTests extends BaseTest {
     }
 
     @Test
-    public void gatherCardsFromPlayersShouldReturnNullWhenCalledWithNoPlayers() {
-        gameState.setPlayers(null);
-        List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), true);
-        assertNull(cardPool);
-    }
-
-    @Test
-    public void gatherCardsFromPlayersdReturnNullWhenAPlayerHasNoCardsInTheirDeck() {
-        List<Player> testList = new ArrayList<>();
-        testList.add(playerWithNoCards);
-        testList.add(playerWithNoCards);
-        gameState.setPlayers(testList);
-        List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(testList, true);
-        assertNull(cardPool);
-    }
-
-    @Test
-    public void gatherCardsFromPlayersShouldReturnNullWhenPlayerHasNullDeck() {
-        List<Player> playerList = new ArrayList<>();
-        playerList.add(playerWithNoCards);
-        gameState.setPlayers(playerList);
-        assertNull(board.gatherCardsFromPlayers(playerList, true));
-    }
-
-    @Test
     public void determineWarReturnsNullWhenAnEmptyPoolIsPassed() {
         TrickCard card = new TrickCard(testCard, player1);
         List<Player> resultingSet = board.determineWar(null, card);
@@ -231,6 +202,45 @@ public class BoardTests extends BaseTest {
         int actual = gameState.getPlayerByIndex(0).getDeck().size() + gameState.getPlayerByIndex(1).getDeck().size();
         int expectedTotalCardsInSystem = 8;
         assertEquals(expectedTotalCardsInSystem, actual);
+    }
+
+    @Test
+    public void cleanupTheTrickPerformsNoActionWhenPotIsNull() {
+        Player testPlayer = PlayerFactory.buildPlayerWithEmptyDeck();
+        List<TrickCard> cardList = null;
+        board.cleanUpTheTrick(testPlayer, cardList);
+        assertTrue(testPlayer.getDeck().isEmpty());
+    }
+
+    @Test
+    public void cleanupTheTrickHandlesNullWinningPlayer() {
+        Player testPlayer = PlayerFactory.buildPlayerWithEmptyDeck();
+        List<TrickCard> cardList = new ArrayList<>();
+        cardList.add(new TrickCard(testCard, testPlayer, true));
+        cardList.add(new TrickCard(testCard, testPlayer, true));
+        testPlayer = null;
+        board.cleanUpTheTrick(testPlayer, cardList);
+    }
+
+    @Test
+    public void cleanupTheTrickAddsPotCardsToWinningPlayerDeck() {
+        Player testPlayer = PlayerFactory.buildPlayerWithEmptyDeck();
+        List<TrickCard> cardList = new ArrayList<>();
+        cardList.add(new TrickCard(testCard, testPlayer, true));
+        cardList.add(new TrickCard(testCard, testPlayer, true));
+        board.cleanUpTheTrick(testPlayer, cardList);
+        assertEquals(2, cardList.size());
+    }
+
+    @Test
+    public void handleTrickHandlesNullPot() {
+        board.handleTrick(null);
+    }
+
+    @Test
+    public void handleTrickHandlesEmptyPot() {
+        List<TrickCard> pot = new ArrayList<>();
+        board.handleTrick(pot);
     }
 
 }
