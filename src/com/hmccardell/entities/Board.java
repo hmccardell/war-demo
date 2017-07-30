@@ -16,24 +16,14 @@ public class Board {
 
     private int _millisecondDelay;
     private boolean _verboseMode;
+    private GameState _gameState;
 
-    public static void dealCards(List<WarCard> gameDeck, GameState gameState) {
-        int remainder = 52 % gameState.getPlayers().size();
-        int numberOfCards = 52 / gameState.getPlayers().size();
-        //System.out.println(gameState.getPlayers().size() + " players");
-        //System.out.println(numberOfCards + " cards per player with " + remainder + " cards leftover and distributed to players in order");
-        for (Player player : gameState.getPlayers()) {
-            List<WarCard> playerDeck = new ArrayList<>();
-            for (int i = 0; i <= numberOfCards - 1; ++i) {
-                dealCardToPlayer(gameDeck, playerDeck);
-            }
-            if (remainder > 0) {
-                dealCardToPlayer(gameDeck, playerDeck);
-                --remainder;
-            }
-            player.setDeck(playerDeck);
-            //System.out.println(player.getName() + " has " + playerDeck.size() + " cards");
-        }
+    public GameState get_gameState() {
+        return _gameState;
+    }
+
+    public void set_gameState(GameState _gameState) {
+        this._gameState = _gameState;
     }
 
     public int get_millisecondDelay() {
@@ -52,7 +42,39 @@ public class Board {
         this._verboseMode = _verboseMode;
     }
 
-    public static void dealCardToPlayer(List<WarCard> gameDeck, List<WarCard> playerDeck) {
+
+    /**
+     * Checks the game state for the number of players and divides the game deck into even player decks.
+     * It also checks for remainder cards and deals them out to each player until no cards remain.
+     *
+     * @param gameDeck a deck of cards to divide among players
+     * @return true if the deck is empty, false if it was null or not empty
+     */
+    public boolean dealCards(List<WarCard> gameDeck) {
+
+        if(gameDeck == null || gameDeck.isEmpty()){
+            return false;
+        }
+
+        int remainder = 52 % _gameState.getPlayers().size();
+        int numberOfCards = 52 / _gameState.getPlayers().size();
+        for (Player player : _gameState.getPlayers()) {
+            List<WarCard> playerDeck = new ArrayList<>();
+            for (int i = 0; i <= numberOfCards - 1; ++i) {
+                dealCardToPlayer(gameDeck, playerDeck);
+            }
+            if (remainder > 0) {
+                dealCardToPlayer(gameDeck, playerDeck);
+                --remainder;
+            }
+            player.setDeck(playerDeck);
+        }
+
+        return(gameDeck.isEmpty());
+    }
+
+
+    public void dealCardToPlayer(List<WarCard> gameDeck, List<WarCard> playerDeck) {
 
         if (!gameDeck.isEmpty()) {
             WarCard card = gameDeck.remove(0);

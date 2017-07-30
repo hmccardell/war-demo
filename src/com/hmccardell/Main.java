@@ -33,7 +33,7 @@ public class Main {
             gamePlayers.add(player2);
             //gamePlayers.add(player3);
             gameState.setPlayers(gamePlayers);
-            Board.dealCards(deck, gameState);
+            board.dealCards(deck);
         }
         while(!gameState.isGameOver()){
             List<TrickCard> pot = new ArrayList<>();
