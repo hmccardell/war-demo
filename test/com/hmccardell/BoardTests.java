@@ -47,8 +47,8 @@ public class BoardTests extends BaseTest {
     }
 
     //    Board board = new Board;
-//    Board boardSpy = Mockito.spy(board);
-//        Mockito.when(boardSpy.()).thenReturn(5l);
+    //    Board boardSpy = Mockito.spy(board);
+    //    Mockito.when(boardSpy.()).thenReturn(5l);
     @Test
     public void dealCardsDistrubitesEntireDeck() {
         List<WarCard> gameDeck = new ArrayList<>();
@@ -133,7 +133,7 @@ public class BoardTests extends BaseTest {
     @Test
     public void gatherCardsFromPlayersShouldResultInListWithSizeEqualToNumberOfPlayers() {
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
+        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), true);
         assertEquals(cardPool.size(), gameState.getPlayers().size());
     }
 
@@ -141,7 +141,7 @@ public class BoardTests extends BaseTest {
     public void gatherCardsFromPlayersShouldReturnNullWhenCalledWithNoPlayers() {
         gameState.setPlayers(null);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
+        cardPool = board.gatherCardsFromPlayers(gameState.getPlayers(), true);
         assertNull(cardPool);
     }
 
@@ -152,7 +152,7 @@ public class BoardTests extends BaseTest {
         testList.add(playerWithNoCards);
         gameState.setPlayers(testList);
         List<TrickCard> cardPool = new ArrayList<>();
-        cardPool = board.gatherCardsFromPlayers(testList, gameState, true);
+        cardPool = board.gatherCardsFromPlayers(testList, true);
         assertNull(cardPool);
     }
 
@@ -161,7 +161,7 @@ public class BoardTests extends BaseTest {
         List<Player> playerList = new ArrayList<>();
         playerList.add(playerWithNoCards);
         gameState.setPlayers(playerList);
-        assertNull(board.gatherCardsFromPlayers(playerList, gameState, true));
+        assertNull(board.gatherCardsFromPlayers(playerList, true));
     }
 
     @Test
@@ -225,120 +225,12 @@ public class BoardTests extends BaseTest {
         assertEquals(expectedSize, actualSize);
     }
 
-//    @Test
-//    public void totalCardsInTheSystemDoesNotChangeWhenWarOccurs() {
-//        List<TrickCard> testPool = new ArrayList<>();
-//        WarCard card1 = new WarCard(2, Suit.SPADES);
-//        WarCard card2 = new WarCard(2, Suit.SPADES);
-//        WarCard card3 = new WarCard(10, Suit.SPADES);
-//        WarCard card4 = new WarCard(11, Suit.SPADES);
-//        player1 = new Player("Hayes");
-//        player2 = new Player("Greg");
-//        player1.addCardToPlayerDeck(card1);
-//        player2.addCardToPlayerDeck(card2);
-//        player1.addCardToPlayerDeck(card3);
-//        player2.addCardToPlayerDeck(card4);
-//        List<Player> playerList = new ArrayList<>();
-//        playerList.add(player1);
-//        playerList.add(player2);
-//        gameState.setPlayers(playerList);
-//        testPool = board.gatherCardsFromPlayers(gameState, true);
-//        System.out.println(gameState.getPlayerByIndex(0).getDeck().size() + gameState.getPlayerByIndex(1).getDeck().size());
-//        List<Player> winners = new ArrayList<>();
-//        TrickCard testCard = new TrickCard(card1, player1);
-//        winners = board.determineWar(testPool, testCard);
-//        System.out.println(gameState.getPlayerByIndex(0).getDeck().size() + gameState.getPlayerByIndex(1).getDeck().size());
-//        int actual = gameState.getPlayerByIndex(0).getDeck().size() + gameState.getPlayerByIndex(1).getDeck().size();
-//        int expectedTotalCardsInSystem = 4;
-//        assertEquals(expectedTotalCardsInSystem, actual);
-//    }
-//
-//    @Test
-//    public void warTest() {
-//        player1.addCardToPlayerDeck(new WarCard(10, Suit.CLUBS));
-//        player1.addCardToPlayerDeck(new WarCard(11, Suit.CLUBS));
-//        player2.addCardToPlayerDeck(new WarCard(12, Suit.DIAMONDS));
-//        player2.addCardToPlayerDeck(new WarCard(15, Suit.DIAMONDS));
-//        gameState.getPlayers().forEach(player -> System.out.println(player.toString()));
-//        List<TrickCard> pool = new ArrayList<>();
-//        System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                gameState.getPlayerByIndex(1).getDeck().size());
-//
-//        {
-//            pool = board.gatherCardsFromPlayers(gameState);
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//            List<Player> winners = new ArrayList<>();
-//            winners.addAll(board.determineWarOrWinnerOfTrick(pool));
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            board.cleanUpTheTrick(gameState, winners, pool);
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            gameState.getPlayers().forEach(player -> System.out.println(player.toString()));
-//        }
-//
-//        {
-//            pool = board.gatherCardsFromPlayers(gameState);
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//            List<Player> winners = new ArrayList<>();
-//            winners.addAll(board.determineWarOrWinnerOfTrick(pool));
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            board.cleanUpTheTrick(gameState, winners, pool);
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            gameState.getPlayers().forEach(player -> System.out.println(player.toString()));
-//        }
-//
-//        {
-//            pool = board.gatherCardsFromPlayers(gameState);
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//            List<Player> winners = new ArrayList<>();
-//            winners.addAll(board.determineWarOrWinnerOfTrick(pool));
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            board.cleanUpTheTrick(gameState, winners, pool);
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            gameState.getPlayers().forEach(player -> System.out.println(player.toString()));
-//        }
-//
-//        {
-//            pool = board.gatherCardsFromPlayers(gameState);
-//            if(pool == null){
-//                System.out.println(gameState.getPlayers().get(0).getName() + " has won the game");
-//            }
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//            List<Player> winners = new ArrayList<>();
-//            winners.addAll(board.determineWarOrWinnerOfTrick(pool));
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            board.cleanUpTheTrick(gameState, winners, pool);
-//
-//            System.out.println(gameState.getPlayerByIndex(0).getDeck().size() +
-//                    gameState.getPlayerByIndex(1).getDeck().size());
-//
-//            gameState.getPlayers().forEach(player -> System.out.println(player.toString()));
-//        }
-//
-//
-//    }
+    @Test
+    public void totalCardsInTheSystemDoesNotChangeWhenWarOccurs() {
+        setGameStateFor2PlayerWar(gameState, board);
+        int actual = gameState.getPlayerByIndex(0).getDeck().size() + gameState.getPlayerByIndex(1).getDeck().size();
+        int expectedTotalCardsInSystem = 8;
+        assertEquals(expectedTotalCardsInSystem, actual);
+    }
+
 }

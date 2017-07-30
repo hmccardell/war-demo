@@ -37,9 +37,9 @@ public class Main {
         }
         while(!gameState.isGameOver()){
             List<TrickCard> pot = new ArrayList<>();
-            pot = board.gatherCardsFromPlayers(gameState.getPlayers(), gameState, true);
+            pot = board.gatherCardsFromPlayers(gameState.getPlayers(), true);
             Thread.sleep(500);
-            board.handleTrick(gameState, pot);
+            board.handleTrick( pot);
             gameState.displayTotalCardsInState();
         }
 
