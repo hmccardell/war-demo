@@ -1,18 +1,16 @@
 package com.hmccardell.entities;
 
 /**
- * A class to model a card in a trick, a WarCard decorated with the player who threw it.
+ * A class to model a card in a trick, a Card decorated with the player who threw it.
  *
  * @author hmccardell
  */
-public class TrickCard implements Card {
+public class TrickCard {
 
     int value;
     Suit suit;
     Player player;
     boolean faceUp;
-
-
 
     public boolean isFaceUp() {
         return faceUp;
@@ -25,15 +23,15 @@ public class TrickCard implements Card {
     public TrickCard() {
     }
 
-    public TrickCard(WarCard warCard, Player player) {
-        this.value = warCard.getValue();
-        this.suit = warCard.getSuit();
+    public TrickCard(Card card, Player player) {
+        this.value = card.getValue();
+        this.suit = card.getSuit();
         this.player = player;
     }
 
-    public TrickCard(WarCard warCard, Player player, boolean faceUp) {
-        this.value = warCard.getValue();
-        this.suit = warCard.getSuit();
+    public TrickCard(Card card, Player player, boolean faceUp) {
+        this.value = card.getValue();
+        this.suit = card.getSuit();
         this.player = player;
         this.faceUp = faceUp;
     }
@@ -108,7 +106,7 @@ public class TrickCard implements Card {
                 cardName = String.valueOf(value) + " of " + suit + " ";
                 break;
             case 11:
-                cardName =  "Jack of " + suit;
+                cardName = "Jack of " + suit;
                 break;
             case 12:
                 cardName = "Queen of " + suit;

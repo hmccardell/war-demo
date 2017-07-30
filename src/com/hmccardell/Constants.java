@@ -1,4 +1,4 @@
-package com.hmccardell.entities;
+package com.hmccardell;
 
 /**
  * A class to track constants for prompts and error messages.

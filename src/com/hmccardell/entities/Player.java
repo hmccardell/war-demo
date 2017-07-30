@@ -11,7 +11,7 @@ import java.util.List;
 public class Player {
 
     private String name;
-    private List<WarCard> deck;
+    private List<Card> deck;
 
     public String getName() {
         return name;
@@ -21,15 +21,15 @@ public class Player {
         this.name = name;
     }
 
-    public List<WarCard> getDeck() {
+    public List<Card> getDeck() {
         return deck;
     }
 
-    public void setDeck(List<WarCard> deck) {
+    public void setDeck(List<Card> deck) {
         this.deck = deck;
     }
 
-    public void addCardToPlayerDeck(WarCard cardToAdd) {
+    public void addCardToPlayerDeck(Card cardToAdd) {
         deck.add(cardToAdd);
     }
 

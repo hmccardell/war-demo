@@ -21,7 +21,7 @@ public class BoardTests extends BaseTest {
     Player player2;
     Player playerWithNoCards;
     Player player4;
-    WarCard testCard;
+    Card testCard;
 
     @Before
     public void setup() {
@@ -37,12 +37,12 @@ public class BoardTests extends BaseTest {
         player1 = new Player("Hayes");
         player2 = new Player("Greg");
         playerWithNoCards = new Player("Dan");
-        player1.addCardToPlayerDeck(new WarCard(2, Suit.SPADES));
-        player2.addCardToPlayerDeck(new WarCard(3, Suit.HEARTS));
+        player1.addCardToPlayerDeck(new Card(2, Suit.SPADES));
+        player2.addCardToPlayerDeck(new Card(3, Suit.HEARTS));
         testPlayers.add(player1);
         testPlayers.add(player2);
         gameState.setPlayers(testPlayers);
-        testCard = new WarCard(2, Suit.SPADES);
+        testCard = new Card(2, Suit.SPADES);
         board.set_gameState(gameState);
     }
 
@@ -51,7 +51,7 @@ public class BoardTests extends BaseTest {
     //    Mockito.when(boardSpy.()).thenReturn(5l);
     @Test
     public void dealCardsDistrubitesEntireDeck() {
-        List<WarCard> gameDeck = new ArrayList<>();
+        List<Card> gameDeck = new ArrayList<>();
         gameDeck = createDeck();
         boolean goodDeal = board.dealCards(gameDeck);
         assertTrue(goodDeal);
@@ -59,21 +59,21 @@ public class BoardTests extends BaseTest {
 
     @Test
     public void dealCardsReturnsFalseWhenDeckIsNull() {
-        List<WarCard> gameDeck = null;
+        List<Card> gameDeck = null;
         boolean badDeal = board.dealCards(gameDeck);
         assertFalse(badDeal);
     }
 
     @Test
     public void dealCardsReturnsFalseWhenDeckIsEmpty() {
-        List<WarCard> gameDeck = new ArrayList<>();
+        List<Card> gameDeck = new ArrayList<>();
         boolean badDeal = board.dealCards(gameDeck);
         assertFalse(badDeal);
     }
 
     @Test
     public void dealCardsDealsRemainderCardsWhenUnevenDeck() {
-        List<WarCard> gameDeck = new ArrayList<>();
+        List<Card> gameDeck = new ArrayList<>();
         gameDeck = createDeck();
         List<Player> playerList = new ArrayList<>();
         playerList = gameState.getPlayers();
@@ -93,8 +93,8 @@ public class BoardTests extends BaseTest {
 
     @Test
     public void determineHighestCardReturnsHighestCardWhenFaceUp() {
-        TrickCard card1 = new TrickCard(new WarCard(2, Suit.DIAMONDS), player1, true);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.DIAMONDS), player1, true);
+        TrickCard card1 = new TrickCard(new Card(2, Suit.DIAMONDS), player1, true);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.DIAMONDS), player1, true);
         List<TrickCard> testList = new ArrayList<>();
         testList.add(card1);
         testList.add(card2);
@@ -104,8 +104,8 @@ public class BoardTests extends BaseTest {
 
     @Test
     public void determineHighestCardReturnsNullWhenCardsAreFacedown() {
-        TrickCard card1 = new TrickCard(new WarCard(2, Suit.DIAMONDS), player1, false);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.DIAMONDS), player1, false);
+        TrickCard card1 = new TrickCard(new Card(2, Suit.DIAMONDS), player1, false);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.DIAMONDS), player1, false);
         List<TrickCard> testList = new ArrayList<>();
         testList.add(card1);
         testList.add(card2);
@@ -115,8 +115,8 @@ public class BoardTests extends BaseTest {
 
     @Test
     public void dealCardToPlayerIncreasesTheirDeckSizeByOneAndDecreasesTheGameDeckSizeByOne() {
-        List<WarCard> playerDeck = new ArrayList<>();
-        List<WarCard> gameDeck = new ArrayList<>();
+        List<Card> playerDeck = new ArrayList<>();
+        List<Card> gameDeck = new ArrayList<>();
         gameDeck.add(testCard);
         board.dealCardToPlayer(gameDeck, playerDeck);
         assertEquals(1, playerDeck.size());
@@ -125,7 +125,7 @@ public class BoardTests extends BaseTest {
 
     @Test
     public void populateDeckShouldInsert52Cards() {
-        List<WarCard> deck = new ArrayList<>();
+        List<Card> deck = new ArrayList<>();
         Board.populateDeck(deck);
         assertEquals(52, deck.size());
     }
@@ -174,8 +174,8 @@ public class BoardTests extends BaseTest {
     @Test
     public void determineWarReturnsOnePlayerWhenThereAreNoWars() {
         List<TrickCard> testPool = new ArrayList<>();
-        TrickCard card1 = new TrickCard(new WarCard(11, Suit.SPADES), player1);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2);
+        TrickCard card1 = new TrickCard(new Card(11, Suit.SPADES), player1);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.SPADES), player2);
         testPool.add(card1);
         testPool.add(card2);
         int actualSize = board.determineWar(testPool, card1).size();
@@ -186,8 +186,8 @@ public class BoardTests extends BaseTest {
     @Test
     public void determineWarReturnsTwoPlayersWhenTwoValuesMatch() {
         List<TrickCard> testPool = new ArrayList<>();
-        TrickCard card1 = new TrickCard(new WarCard(10, Suit.SPADES), player1, true);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2, true);
+        TrickCard card1 = new TrickCard(new Card(10, Suit.SPADES), player1, true);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.SPADES), player2, true);
         testPool.add(card1);
         testPool.add(card2);
         int actualSize = board.determineWar(testPool, card1).size();
@@ -198,9 +198,9 @@ public class BoardTests extends BaseTest {
     @Test
     public void determineWarReturnsThreePlayersWhenThreeValuesMatch() {
         List<TrickCard> testPool = new ArrayList<>();
-        TrickCard card1 = new TrickCard(new WarCard(10, Suit.SPADES), player1, true);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2, true);
-        TrickCard card3 = new TrickCard(new WarCard(10, Suit.SPADES), playerWithNoCards, true);
+        TrickCard card1 = new TrickCard(new Card(10, Suit.SPADES), player1, true);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.SPADES), player2, true);
+        TrickCard card3 = new TrickCard(new Card(10, Suit.SPADES), playerWithNoCards, true);
         testPool.add(card1);
         testPool.add(card2);
         testPool.add(card3);
@@ -212,10 +212,10 @@ public class BoardTests extends BaseTest {
     @Test
     public void determineWarReturnsFourPlayersWhenFourValuesMatch() {
         List<TrickCard> testPool = new ArrayList<>();
-        TrickCard card1 = new TrickCard(new WarCard(10, Suit.SPADES), player1, true);
-        TrickCard card2 = new TrickCard(new WarCard(10, Suit.SPADES), player2, true);
-        TrickCard card3 = new TrickCard(new WarCard(10, Suit.SPADES), playerWithNoCards, true);
-        TrickCard card4 = new TrickCard(new WarCard(10, Suit.SPADES), playerWithNoCards, true);
+        TrickCard card1 = new TrickCard(new Card(10, Suit.SPADES), player1, true);
+        TrickCard card2 = new TrickCard(new Card(10, Suit.SPADES), player2, true);
+        TrickCard card3 = new TrickCard(new Card(10, Suit.SPADES), playerWithNoCards, true);
+        TrickCard card4 = new TrickCard(new Card(10, Suit.SPADES), playerWithNoCards, true);
         testPool.add(card1);
         testPool.add(card2);
         testPool.add(card3);

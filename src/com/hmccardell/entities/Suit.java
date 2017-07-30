@@ -1,7 +1,9 @@
 package com.hmccardell.entities;
 
 /**
- * Created by hmccardell on 7/26/2017.
+ * An enum for card suits.
+ *
+ * @author hmccardell
  */
 public enum Suit {
 

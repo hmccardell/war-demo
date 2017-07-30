@@ -39,7 +39,7 @@ public class GameState {
         return players.get(index);
     }
 
-    public void setPlayerDeck(int indexOfPlayer, List<WarCard> deck) {
+    public void setPlayerDeck(int indexOfPlayer, List<Card> deck) {
         Player playerToUpdate = players.get(indexOfPlayer);
         playerToUpdate.setDeck(deck);
     }
@@ -52,7 +52,7 @@ public class GameState {
             individualTotals.append(player.getName() + " : " + player.getDeck().size() + " ");
         }
         StringBuilder systemTotals = new StringBuilder();
-        systemTotals.append("Total cards in system: " + total + "[ ");
+        systemTotals.append("Total cards in system: " + total + " [ ");
         systemTotals.append(individualTotals.toString());
         systemTotals.append("]");
         System.out.println(systemTotals.toString());

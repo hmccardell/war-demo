@@ -10,13 +10,13 @@ import java.util.List;
  */
 public abstract class BaseTest {
 
-    public List<WarCard> createDeck(){
-        List<WarCard> deckToReturn = new ArrayList<>();
+    public List<Card> createDeck(){
+        List<Card> deckToReturn = new ArrayList<>();
         for (int i = 2; i < 15; i++) {
-            deckToReturn.add(new WarCard(i, Suit.CLUBS));
-            deckToReturn.add(new WarCard(i, Suit.DIAMONDS));
-            deckToReturn.add(new WarCard(i, Suit.HEARTS));
-            deckToReturn.add(new WarCard(i, Suit.SPADES));
+            deckToReturn.add(new Card(i, Suit.CLUBS));
+            deckToReturn.add(new Card(i, Suit.DIAMONDS));
+            deckToReturn.add(new Card(i, Suit.HEARTS));
+            deckToReturn.add(new Card(i, Suit.SPADES));
         }
 
         return deckToReturn;
@@ -24,14 +24,14 @@ public abstract class BaseTest {
 
     public void setGameStateFor2PlayerWar(GameState gameState, Board board){
 
-        WarCard card1 = new WarCard(2, Suit.SPADES);
-        WarCard card2 = new WarCard(2, Suit.SPADES);
-        WarCard card3 = new WarCard(10, Suit.SPADES);
-        WarCard card4 = new WarCard(11, Suit.SPADES);
-        WarCard card5 = new WarCard(8, Suit.SPADES);
-        WarCard card6 = new WarCard(6, Suit.SPADES);
-        WarCard card7 = new WarCard(5, Suit.SPADES);
-        WarCard card8 = new WarCard(7, Suit.SPADES);
+        Card card1 = new Card(2, Suit.SPADES);
+        Card card2 = new Card(2, Suit.SPADES);
+        Card card3 = new Card(10, Suit.SPADES);
+        Card card4 = new Card(11, Suit.SPADES);
+        Card card5 = new Card(8, Suit.SPADES);
+        Card card6 = new Card(6, Suit.SPADES);
+        Card card7 = new Card(5, Suit.SPADES);
+        Card card8 = new Card(7, Suit.SPADES);
         Player player1 = new Player("Hayes");
         Player player2 = new Player("Greg");
         player1.addCardToPlayerDeck(card1);

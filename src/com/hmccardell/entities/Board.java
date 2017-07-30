@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hmccardell.entities.Constants.*;
+import static com.hmccardell.Constants.*;
 
 /**
  * A class for the main engine of the game.
@@ -49,7 +49,7 @@ public class Board {
      * @param gameDeck a deck of cards to divide among players
      * @return true if the deck is empty, false if it was null or not empty
      */
-    public boolean dealCards(List<WarCard> gameDeck) {
+    public boolean dealCards(List<Card> gameDeck) {
 
         if (gameDeck == null || gameDeck.isEmpty()) {
             return false;
@@ -58,7 +58,7 @@ public class Board {
         int remainder = 52 % _gameState.getPlayers().size();
         int numberOfCards = 52 / _gameState.getPlayers().size();
         for (Player player : _gameState.getPlayers()) {
-            List<WarCard> playerDeck = new ArrayList<>();
+            List<Card> playerDeck = new ArrayList<>();
             for (int i = 0; i <= numberOfCards - 1; ++i) {
                 dealCardToPlayer(gameDeck, playerDeck);
             }
@@ -78,10 +78,10 @@ public class Board {
      * @param gameDeck   a list of cards to remove a card from
      * @param playerDeck a list of cards to add the removed card to
      */
-    public void dealCardToPlayer(List<WarCard> gameDeck, List<WarCard> playerDeck) {
+    public void dealCardToPlayer(List<Card> gameDeck, List<Card> playerDeck) {
 
         if (!gameDeck.isEmpty()) {
-            WarCard card = gameDeck.remove(0);
+            Card card = gameDeck.remove(0);
             playerDeck.add(card);
         }
     }
@@ -91,13 +91,13 @@ public class Board {
      *
      * @param deck the list to populate
      */
-    public static void populateDeck(List<WarCard> deck) {
+    public static void populateDeck(List<Card> deck) {
 
         for (int i = 2; i < 15; i++) {
-            deck.add(new WarCard(i, Suit.CLUBS));
-            deck.add(new WarCard(i, Suit.DIAMONDS));
-            deck.add(new WarCard(i, Suit.HEARTS));
-            deck.add(new WarCard(i, Suit.SPADES));
+            deck.add(new Card(i, Suit.CLUBS));
+            deck.add(new Card(i, Suit.DIAMONDS));
+            deck.add(new Card(i, Suit.HEARTS));
+            deck.add(new Card(i, Suit.SPADES));
         }
     }
 
@@ -107,6 +107,8 @@ public class Board {
      * @param br a buffered reader to use for reading lines from the console
      */
     public void setupPlayers(BufferedReader br) {
+
+        GameState gameState = new GameState();
 
         int numberOfPlayers = 0;
 
@@ -272,14 +274,14 @@ public class Board {
         if (!gameOver) {
             //remove a card from every player's deck and put it into a pool
             for (Player player : playersToGatherFrom) {
-                WarCard playerCard = player.getDeck().remove(0);
+                Card playerCard = player.getDeck().remove(0);
                 //If the cards should be gathered face up, set their state to face up
                 if (faceUp) {
                     pool.add(new TrickCard(playerCard, player, true));
                     builder.append(player.getName() + " plays a " + playerCard.getName() + ". ");
                 } else {
                     pool.add(new TrickCard(playerCard, player, false));
-                    builder.append("Card was added to the pot face down for " + player.getName() + " . ");
+                    builder.append("Card was added to the pot face down for " + player.getName() + ". ");
                 }
             }
             System.out.println(builder.toString());
@@ -394,12 +396,12 @@ public class Board {
 
         if (pot != null && winningPlayer != null && !checkIfGameOver()) {
             for (TrickCard cardGoingToWinner : pot) {
-                builder.append(cardGoingToWinner.getName(cardGoingToWinner.getValue()));
-                winningPlayer.addCardToPlayerDeck((new WarCard(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
+                builder.append(cardGoingToWinner.getName(cardGoingToWinner.getValue()) + " ");
+                winningPlayer.addCardToPlayerDeck((new Card(cardGoingToWinner.getValue(), cardGoingToWinner.suit)));
             }
         }
 
-        builder.append("added to their deck");
+        builder.append(" added to their deck");
         System.out.println(builder.toString());
     }
 

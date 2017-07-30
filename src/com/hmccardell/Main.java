@@ -12,19 +12,21 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        GameState gameState = new GameState();
+
         Board board = new Board();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        List<WarCard> deck = new ArrayList<>();
+        List<Card> deck = new ArrayList<>();
         Board.populateDeck(deck);
         Collections.shuffle(deck);
-//        Board.setupPlayers(gameState, br);
+//        board.setupPlayers(br);
 //        board.promptSettings(br);
-//        Board.dealCards(deck, gameState);
+//        board.dealCards(deck);
 
-        //test block
+//        //test block
         {
+            GameState gameState = new GameState();
+            board.set_gameState(gameState);
             Player player1 = new Player("Hayes");
             Player player2 = new Player("Greg");
             //Player player3 = new Player("Dan");
@@ -32,15 +34,15 @@ public class Main {
             gamePlayers.add(player1);
             gamePlayers.add(player2);
             //gamePlayers.add(player3);
-            gameState.setPlayers(gamePlayers);
+            board.get_gameState().setPlayers(gamePlayers);
             board.dealCards(deck);
         }
-        while(!gameState.isGameOver()){
+        while(!board.get_gameState().isGameOver()){
             List<TrickCard> pot = new ArrayList<>();
-            pot = board.gatherCardsFromPlayers(gameState.getPlayers(), true);
+            pot = board.gatherCardsFromPlayers(board.get_gameState().getPlayers(), true);
             Thread.sleep(500);
             board.handleTrick( pot);
-            gameState.displayTotalCardsInState();
+            board.get_gameState().displayTotalCardsInState();
         }
 
         System.out.println("End program");
